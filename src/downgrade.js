@@ -8,7 +8,6 @@ const { CMDS }                        = require('./commands/commands');
 const CommandsStream                  = require('./commands/commands-stream');
 const fs       = require('fs');
 const pkware                          = require('pkware-wasm');  // ✅ ADD THIS
-const { fixPlayerColorsForDowngrade } = require('./header');
 
 const dumpFrame = (buf, frame, frameBuf) => {
   buf.append(uint32(frame));
@@ -19,15 +18,14 @@ const dumpFrame = (buf, frame, frameBuf) => {
 const downgradeReplay = async (replay, chkDowngrader, filePath) => {
   const bl = new BufferList();
   
-  // ✅ Magic: RAW BYTES, NOT A BLOCK, replay magic=reRS Or seRS, exist @ byte 13, so if index[12] == (0x73|115|s) then v1.21+
+  // ✅ Magic: RAW BYTES, NOT A BLOCK
   console.log(`📝 Writing magic: 0x${HeaderMagicClassic.toString(16)}`);
   await writeBlock(bl, uint32(HeaderMagicClassic), false);
   console.log(`   Total size so far: ${bl.length}`);
 
-  // Header: BLOCK, the 4 bytes @index[28:32] is the actual compressed header length, (0x78|120|x) @index[33] is the mark for zlib compression
-  console.log(`\n📦 Writing header block while fixing player colors (always reading 0x279=633 bytes decompressed)`);
-  const fixedHeader = fixPlayerColorsForDowngrade(replay.rawHeader, replay.chk);
-  await writeBlock(bl, fixedHeader, true);
+  // Header: BLOCK
+  console.log(`\n📦 Writing header block (0x279 bytes decompressed)`);
+  await writeBlock(bl, replay.rawHeader, true);
   console.log(`   Total size so far: ${bl.length}`);
 
   // Commands
