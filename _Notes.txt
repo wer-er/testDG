@@ -1,0 +1,20 @@
+- Open Downgrade-Replay folder in VSCode, click "JavaScript Debug Terminal", the type: node main.js "repName.rep"
+- node extract-chk.js "repName_D.rep" can be used only on the Downgraded replay to check if somethings are normal.
+
+"tvp cwal request_D.rep" desync case:
+-------------------------------------
+- The desync can be seen between 15:25 & 15:39 in the form of 1 supply less (99/111 instead of 100/111) due to 1 Zergling less
+- CmdCount for both players was less 33 in the downgrade was due screp_mz (that fixed bwapi spam select "cmdType=9" bug in replay) is causing the disappearing of frame 109 and other select_ext "cmdType=99" cmds, so we restored org screp (that doesn't work on XP)
+
+*** Task 2 **** append replays generated from a saved game into one replay:
+------------------------------------------------
+1. Fully parse 1st replay-part with header
+2. Add comma-separated list of replays to be appended to 1st replay.
+3. We're not doing any downgrade, so just parse and append
+
+pre-task:
+- allow DG to read/write v16 replays without DG
+
+
+
+-------- unit/upg/tec restrictions is only for UMS, I tried to disable Dragoon & Storm in scmd but they've no effect in Melee
